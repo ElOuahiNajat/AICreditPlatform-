@@ -1,0 +1,470 @@
+<div class="credits-container">
+  <div class="credits-header">
+    <h2><i class="fas fa-credit-card"></i> Gestion des Crédits</h2>
+    <div class="header-actions">
+      <button class="btn-export" (click)="exportCSV()">
+        <i class="fas fa-download"></i> Exporter CSV
+      </button>
+      <button class="btn-add" (click)="openAddModal()">
+        <i class="fas fa-plus"></i> Nouveau Crédit
+      </button>
+    </div>
+  </div>
+
+  <div class="credits-content">
+    <div *ngIf="credits.length === 0" class="empty-state">
+      <i class="fas fa-file-invoice-dollar"></i>
+      <h3>Aucun crédit trouvé</h3>
+      <p>Commencez par ajouter un nouveau crédit.</p>
+    </div>
+
+    <div *ngFor="let credit of credits" class="credit-card" [class]="'status-' + credit.statut?.toLowerCase()">
+      <div class="credit-info">
+        <div class="credit-main">
+          <h3 class="credit-title">Crédit #{{credit.id}}</h3>
+          <span class="credit-client">Client ID: {{credit.clientId}}</span>
+        </div>
+
+        <div class="credit-details">
+          <div class="detail-row">
+            <div class="detail-item">
+              <span class="label">Montant:</span>
+              <span class="value amount">{{credit.montant | currency:'EUR':'symbol':'1.2-2'}}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Date demande:</span>
+              <span class="value">{{credit.dateDemande | date:'dd/MM/yyyy'}}</span>
+            </div>
+          </div>
+
+          <div class="detail-row">
+            <div class="detail-item">
+              <span class="label">Statut:</span>
+              <span class="status-badge">{{credit.statut}}</span>
+            </div>
+            <!-- Vous pouvez ajouter d'autres propriétés de votre modèle Credit ici -->
+            <!-- Exemple: <div class="detail-item" *ngIf="credit.autrePropriete">
+              <span class="label">Autre Propriété:</span>
+              <span class="value">{{credit.autrePropriete}}</span>
+            </div> -->
+          </div>
+        </div>
+      </div>
+
+      <div class="credit-actions">
+        <div class="status-actions" *ngIf="credit.statut === 'EN_ATTENTE'">
+          <button class="btn-approve" (click)="approveCredit(credit)">
+            <i class="fas fa-check"></i> Approuver
+          </button>
+          <button class="btn-refuse" (click)="refuseCredit(credit)">
+            <i class="fas fa-times"></i> Refuser
+          </button>
+        </div>
+
+        <div class="general-actions">
+          <button class="btn-edit" (click)="editCredit(credit)">
+            <i class="fas fa-edit"></i>
+          </button>
+          <button class="btn-delete" (click)="deleteCredit(credit)">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination" *ngIf="credits.length > 0">
+    <button class="btn-prev" (click)="prevPage()" [disabled]="page === 0">
+      <i class="fas fa-chevron-left"></i> Précédent
+    </button>
+    <span class="page-info">Page {{page + 1}}</span>
+    <button class="btn-next" (click)="nextPage()">
+      Suivant <i class="fas fa-chevron-right"></i>
+    </button>
+  </div>
+</div>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+  @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+
+  .credits-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px;
+    font-family: 'Inter', sans-serif;
+    background: #f8fafc;
+    min-height: 100vh;
+  }
+
+  .credits-header {
+    background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
+    color: white;
+    padding: 24px;
+    border-radius: 16px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 20px rgba(52, 152, 219, 0.3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .credits-header h2 {
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .credits-header h2 i {
+    font-size: 1.8rem;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .btn-export, .btn-add {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+  }
+
+  .btn-export {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+  }
+
+  .btn-export:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+  }
+
+  .btn-add {
+    background: #00b894;
+    color: white;
+  }
+
+  .btn-add:hover {
+    background: #00a382;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 184, 148, 0.4);
+  }
+
+  .credits-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #64748b;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .empty-state i {
+    font-size: 4rem;
+    margin-bottom: 16px;
+    opacity: 0.5;
+  }
+
+  .empty-state h3 {
+    margin: 0 0 8px 0;
+    font-weight: 600;
+  }
+
+  .empty-state p {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+
+  .credit-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    transition: all 0.3s ease;
+    border-left: 4px solid #3498db;
+  }
+
+  .credit-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  }
+
+  .credit-card.status-approuve {
+    border-left-color: #00b894;
+  }
+
+  .credit-card.status-refuse {
+    border-left-color: #d63031;
+  }
+
+  .credit-card.status-en_attente {
+    border-left-color: #fdcb6e;
+  }
+
+  .credit-info {
+    flex: 1;
+  }
+
+  .credit-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .credit-title {
+    margin: 0;
+    font-weight: 600;
+    color: #2d3436;
+    font-size: 1.2rem;
+  }
+
+  .credit-client {
+    color: #64748b;
+    font-weight: 500;
+  }
+
+  .credit-details {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .detail-row {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .label {
+    font-size: 0.85rem;
+    color: #64748b;
+    font-weight: 500;
+  }
+
+  .value {
+    font-weight: 600;
+    color: #2d3436;
+  }
+
+  .amount {
+    color: #00b894;
+    font-size: 1.1rem;
+  }
+
+  .status-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .status-approuve .status-badge {
+    background: #00b89420;
+    color: #00b894;
+  }
+
+  .status-refuse .status-badge {
+    background: #d6303120;
+    color: #d63031;
+  }
+
+  .status-en_attente .status-badge {
+    background: #fdcb6e20;
+    color: #fdcb6e;
+  }
+
+  .credit-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-end;
+  }
+
+  .status-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .general-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .btn-approve, .btn-refuse, .btn-edit, .btn-delete {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.3s ease;
+  }
+
+  .btn-approve {
+    background: #00b89420;
+    color: #00b894;
+  }
+
+  .btn-approve:hover {
+    background: #00b894;
+    color: white;
+  }
+
+  .btn-refuse {
+    background: #d6303120;
+    color: #d63031;
+  }
+
+  .btn-refuse:hover {
+    background: #d63031;
+    color: white;
+  }
+
+  .btn-edit {
+    background: #3498db20;
+    color: #3498db;
+    padding: 8px;
+  }
+
+  .btn-edit:hover {
+    background: #3498db;
+    color: white;
+  }
+
+  .btn-delete {
+    background: #64748b20;
+    color: #64748b;
+    padding: 8px;
+  }
+
+  .btn-delete:hover {
+    background: #d63031;
+    color: white;
+  }
+
+  /* Pagination */
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin-top: 24px;
+    padding: 16px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .btn-prev, .btn-next {
+    padding: 10px 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 25px;
+    background: white;
+    color: #3498db;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+  }
+
+  .btn-prev:hover:not(:disabled), .btn-next:hover:not(:disabled) {
+    background: #3498db;
+    color: white;
+    border-color: #3498db;
+  }
+
+  .btn-prev:disabled, .btn-next:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .page-info {
+    font-weight: 600;
+    color: #2d3436;
+  }
+
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .credits-container {
+      padding: 16px;
+    }
+
+    .credits-header {
+      flex-direction: column;
+      align-items: stretch;
+      text-align: center;
+    }
+
+    .header-actions {
+      justify-content: center;
+    }
+
+    .credit-card {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .credit-main {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .detail-row {
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .credit-actions {
+      flex-direction: row;
+      justify-content: space-between;
+      width: 100%;
+      margin-top: 16px;
+    }
+
+    .pagination {
+      flex-direction: column;
+      gap: 12px;
+    }
+  }
+</style>

@@ -1,0 +1,389 @@
+<div class="scorings-container">
+  <div class="scorings-header">
+    <h2><i class="fas fa-chart-line"></i> Historique des Scorings</h2>
+    <div class="header-actions">
+      <div class="filter-section">
+        <label for="clientFilter">Filtrer par Client ID:</label>
+        <input
+          id="clientFilter"
+          type="number"
+          [(ngModel)]="clientIdFilter"
+          (change)="loadHistory(clientIdFilter)"
+          min="1"
+          class="filter-input"
+        >
+      </div>
+      <button class="btn-add" (click)="openAddModal()">
+        <i class="fas fa-plus"></i> Nouveau Scoring
+      </button>
+    </div>
+  </div>
+
+  <div class="scorings-content">
+    <div *ngIf="scorings.length === 0" class="empty-state">
+      <i class="fas fa-inbox"></i>
+      <h3>Aucun scoring trouvé</h3>
+      <p>Commencez par ajouter un nouveau scoring pour cet historique.</p>
+    </div>
+
+    <div *ngFor="let scoring of scorings" class="scoring-card" [class]="'status-' + scoring.statut">
+      <div class="scoring-info">
+        <div class="scoring-main">
+          <h3 class="scoring-title">Scoring #{{scoring.id}}</h3>
+          <span class="scoring-date">{{scoring.dateCreation | date:'dd/MM/yyyy HH:mm'}}</span>
+        </div>
+        <div class="scoring-details">
+          <div class="detail-item">
+            <span class="label">Client ID:</span>
+            <span class="value">{{scoring.clientId}}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Score:</span>
+            <span class="value score-value">{{scoring.score}}/100</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Statut:</span>
+            <span class="status-badge">{{scoring.statut}}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="scoring-actions">
+        <div class="status-actions" *ngIf="scoring.statut !== 'approved' && scoring.statut !== 'rejected'">
+          <button class="btn-approve" (click)="updateStatus(scoring, 'approved')">
+            <i class="fas fa-check"></i> Approuver
+          </button>
+          <button class="btn-reject" (click)="updateStatus(scoring, 'rejected')">
+            <i class="fas fa-times"></i> Rejeter
+          </button>
+        </div>
+        <button class="btn-delete" (click)="deleteScoring(scoring)">
+          <i class="fas fa-trash"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+  @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+
+  .scorings-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px;
+    font-family: 'Inter', sans-serif;
+    background: #f8fafc;
+    min-height: 100vh;
+  }
+
+  .scorings-header {
+    background: linear-gradient(135deg, #6c5ce7 0%, #8e44ad 100%);
+    color: white;
+    padding: 24px;
+    border-radius: 16px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 20px rgba(108, 92, 231, 0.3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .scorings-header h2 {
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .scorings-header h2 i {
+    font-size: 1.8rem;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .filter-section {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 8px 16px;
+    border-radius: 25px;
+    backdrop-filter: blur(10px);
+  }
+
+  .filter-section label {
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .filter-input {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    padding: 8px 12px;
+    color: white;
+    width: 80px;
+    text-align: center;
+  }
+
+  .filter-input:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  .btn-add {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+  }
+
+  .btn-add:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+  }
+
+  .scorings-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #64748b;
+  }
+
+  .empty-state i {
+    font-size: 4rem;
+    margin-bottom: 16px;
+    opacity: 0.5;
+  }
+
+  .empty-state h3 {
+    margin: 0 0 8px 0;
+    font-weight: 600;
+  }
+
+  .empty-state p {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+
+  .scoring-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    transition: all 0.3s ease;
+    border-left: 4px solid #6c5ce7;
+  }
+
+  .scoring-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  }
+
+  .scoring-card.status-approved {
+    border-left-color: #00b894;
+  }
+
+  .scoring-card.status-rejected {
+    border-left-color: #d63031;
+  }
+
+  .scoring-card.status-pending {
+    border-left-color: #fdcb6e;
+  }
+
+  .scoring-info {
+    flex: 1;
+  }
+
+  .scoring-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .scoring-title {
+    margin: 0;
+    font-weight: 600;
+    color: #2d3436;
+    font-size: 1.2rem;
+  }
+
+  .scoring-date {
+    color: #64748b;
+    font-size: 0.9rem;
+  }
+
+  .scoring-details {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .label {
+    font-size: 0.85rem;
+    color: #64748b;
+    font-weight: 500;
+  }
+
+  .value {
+    font-weight: 600;
+    color: #2d3436;
+  }
+
+  .score-value {
+    color: #6c5ce7;
+    font-size: 1.1rem;
+  }
+
+  .status-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .status-approved .status-badge {
+    background: #00b89420;
+    color: #00b894;
+  }
+
+  .status-rejected .status-badge {
+    background: #d6303120;
+    color: #d63031;
+  }
+
+  .status-pending .status-badge {
+    background: #fdcb6e20;
+    color: #fdcb6e;
+  }
+
+  .scoring-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .status-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .btn-approve, .btn-reject, .btn-delete {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.3s ease;
+  }
+
+  .btn-approve {
+    background: #00b89420;
+    color: #00b894;
+  }
+
+  .btn-approve:hover {
+    background: #00b894;
+    color: white;
+  }
+
+  .btn-reject {
+    background: #d6303120;
+    color: #d63031;
+  }
+
+  .btn-reject:hover {
+    background: #d63031;
+    color: white;
+  }
+
+  .btn-delete {
+    background: #64748b20;
+    color: #64748b;
+    padding: 8px;
+  }
+
+  .btn-delete:hover {
+    background: #d63031;
+    color: white;
+  }
+
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .scorings-container {
+      padding: 16px;
+    }
+
+    .scorings-header {
+      flex-direction: column;
+      align-items: stretch;
+      text-align: center;
+    }
+
+    .header-actions {
+      justify-content: center;
+    }
+
+    .scoring-card {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .scoring-main {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .scoring-details {
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .scoring-actions {
+      justify-content: center;
+      margin-top: 16px;
+    }
+  }
+</style>

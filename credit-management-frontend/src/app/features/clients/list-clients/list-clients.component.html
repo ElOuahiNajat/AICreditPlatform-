@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestion des Clients</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    body {
+      background-color: #f5f7fa;
+      color: #333;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #2c3e50;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #3498db;
+      font-weight: 700;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 25px;
+      padding: 20px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .actions button, .actions input {
+      padding: 12px 18px;
+      border-radius: 6px;
+      border: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .actions button {
+      background-color: #3498db;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .actions button:hover {
+      background-color: #2980b9;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .actions button:active {
+      transform: translateY(0);
+    }
+
+    .actions input {
+      border: 1px solid #ddd;
+      padding: 12px 15px;
+      flex-grow: 1;
+      min-width: 250px;
+    }
+
+    .actions input:focus {
+      outline: none;
+      border-color: #3498db;
+      box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+    }
+
+    .styled-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 25px 0;
+      font-size: 0.9em;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .styled-table thead tr {
+      background-color: #3498db;
+      color: #ffffff;
+      text-align: left;
+      font-weight: bold;
+    }
+
+    .styled-table th,
+    .styled-table td {
+      padding: 15px 18px;
+    }
+
+    .styled-table tbody tr {
+      border-bottom: 1px solid #dddddd;
+      background-color: #ffffff;
+      transition: background-color 0.2s;
+    }
+
+    .styled-table tbody tr:nth-of-type(even) {
+      background-color: #f8f9fa;
+    }
+
+    .styled-table tbody tr:last-of-type {
+      border-bottom: 2px solid #3498db;
+    }
+
+    .styled-table tbody tr:hover {
+      background-color: #e8f4fc;
+    }
+
+    .active {
+      color: #27ae60;
+      font-weight: 500;
+    }
+
+    .inactive {
+      color: #e74c3c;
+      font-weight: 500;
+    }
+
+    .styled-table td button {
+      padding: 8px 12px;
+      margin: 0 5px 5px 0;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.85em;
+      transition: all 0.2s;
+    }
+
+    .styled-table td button:first-child {
+      background-color: #f39c12;
+      color: white;
+    }
+
+    .styled-table td button:nth-child(2) {
+      background-color: #e74c3c;
+      color: white;
+    }
+
+    .styled-table td button:nth-child(3) {
+      background-color: #27ae60;
+      color: white;
+    }
+
+    .styled-table td button:nth-child(4) {
+      background-color: #7f8c8d;
+      color: white;
+    }
+
+    .styled-table td button:hover {
+      opacity: 0.9;
+      transform: scale(1.05);
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 25px;
+      gap: 15px;
+    }
+
+    .pagination button {
+      padding: 10px 20px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .pagination button:hover:not(:disabled) {
+      background-color: #2980b9;
+    }
+
+    .pagination button:disabled {
+      background-color: #bdc3c7;
+      cursor: not-allowed;
+    }
+
+    .pagination span {
+      font-weight: 500;
+      color: #2c3e50;
+    }
+
+    /* Responsive design */
+    @media (max-width: 992px) {
+      .styled-table {
+        display: block;
+        overflow-x: auto;
+      }
+
+      .actions {
+        flex-direction: column;
+      }
+
+      .actions input {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .styled-table td {
+        padding: 10px 5px;
+      }
+
+      .styled-table td button {
+        display: block;
+        width: 100%;
+        margin: 5px 0;
+      }
+    }
+  </style>
+</head>
+<body>
+<h1>👥 Liste des clients</h1>
+
+<div class="actions">
+  <button (click)="openAddModal()">
+    <i class="fas fa-plus"></i> Ajouter Client
+  </button>
+  <input type="text" placeholder="Recherche par email..." [(ngModel)]="searchEmail" />
+  <button (click)="searchClient()">
+    <i class="fas fa-search"></i> Rechercher
+  </button>
+  <button *ngIf="searchEmail" (click)="loadClients()">
+    <i class="fas fa-redo"></i> Réinitialiser
+  </button>
+</div>
+
+<table class="styled-table">
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Nom</th>
+    <th>Email</th>
+    <th>Téléphone</th>
+    <th>Date Naissance</th>
+    <th>Adresse</th>
+    <th>Actif</th>
+    <th>Actions</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let client of clients">
+    <td>{{ client.id }}</td>
+    <td>{{ client.nom }}</td>
+    <td>{{ client.email }}</td>
+    <td>{{ client.telephone }}</td>
+    <td>{{ client.dateNaissance }}</td>
+    <td>{{ client.adresse }}</td>
+    <td>
+          <span [class.active]="client.active" [class.inactive]="!client.active">
+            {{ client.active ? '✅ Oui' : '❌ Non' }}
+          </span>
+    </td>
+    <td>
+      <button (click)="editClient(client)">
+        <i class="fas fa-edit"></i> Modifier
+      </button>
+      <button (click)="deleteClient(client.id)">
+        <i class="fas fa-trash"></i> Supprimer
+      </button>
+      <button *ngIf="!client.active" (click)="activate(client.id)">
+        <i class="fas fa-check"></i> Activer
+      </button>
+      <button *ngIf="client.active" (click)="deactivate(client.id)">
+        <i class="fas fa-times"></i> Désactiver
+      </button>
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+<div class="pagination">
+  <button (click)="previousPage()" [disabled]="page === 0">
+    <i class="fas fa-chevron-left"></i> Précédent
+  </button>
+  <span>Page {{ page + 1 }} / {{ totalPages }}</span>
+  <button (click)="nextPage()" [disabled]="page >= totalPages - 1">
+    Suivant <i class="fas fa-chevron-right"></i>
+  </button>
+</div>
+</body>
+</html>

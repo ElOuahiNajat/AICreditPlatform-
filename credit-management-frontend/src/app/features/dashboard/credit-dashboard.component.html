@@ -1,0 +1,39 @@
+<div class="dashboard">
+
+  <h2>Credit Dashboard</h2>
+
+  <div class="totals">
+    <h3>Totals</h3>
+    <h2>Credit Totals</h2>
+    <p>Total Demandes: {{ totals.totalDemandes | number }}</p>
+    <p>Total Rembourse: {{ totals.totalRembourse | number }}</p>
+  </div>
+
+  <div class="by-status" *ngIf="byStatus.length > 0">
+    <h3>Credits by Status</h3>
+    <ul>
+      <li *ngFor="let item of byStatus">
+        {{ item.statut }}: {{ item.count | number }}
+      </li>
+    </ul>
+  </div>
+
+  <div class="by-client" *ngIf="byClient.length > 0">
+    <h3>Credits by Client</h3>
+    <ul>
+      <li *ngFor="let item of byClient">
+        Client ID {{ item.clientId }}: {{ item.count | number }}
+      </li>
+    </ul>
+  </div>
+
+  <div class="monthly-stats" *ngIf="monthlyStats.length > 0">
+    <h3>Monthly Stats</h3>
+    <ul>
+      <li *ngFor="let item of monthlyStats">
+        {{ item.month }}: {{ item.count | number }}
+      </li>
+    </ul>
+  </div>
+
+</div>

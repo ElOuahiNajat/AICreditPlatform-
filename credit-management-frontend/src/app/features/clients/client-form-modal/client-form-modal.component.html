@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modal de Client</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #f5f7fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1040;
+    }
+
+    .modal-container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      width: 100%;
+      max-width: 500px;
+      overflow: hidden;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1050;
+      animation: modalFadeIn 0.3s ease-out;
+    }
+
+    .modal-header {
+      background: #4a6cf7;
+      color: white;
+      padding: 20px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .btn-close {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-close:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .modal-body {
+      padding: 24px;
+    }
+
+    .form-container {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .form-label {
+      font-weight: 500;
+      color: #2c3e50;
+      margin-bottom: 6px;
+      display: block;
+      font-size: 0.95rem;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: all 0.2s ease;
+      background-color: #f8fafc;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: #4a6cf7;
+      background-color: white;
+      box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.2);
+    }
+
+    .modal-footer {
+      padding: 20px 24px;
+      background-color: #f8f9fa;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      border-top: 1px solid #e9ecef;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 0.95rem;
+    }
+
+    .btn-primary {
+      background: #4a6cf7;
+      color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: #3a5cd8;
+    }
+
+    .btn-primary:disabled {
+      background: #a0a0f0;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: white;
+      color: #64748b;
+      border: 1px solid #e2e8f0;
+    }
+
+    .btn-secondary:hover {
+      background: #f1f5f9;
+    }
+
+    @keyframes modalFadeIn {
+      from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+    }
+
+    /* Responsive design */
+    @media (max-width: 576px) {
+      .modal-container {
+        width: calc(100% - 40px);
+        margin: 0 20px;
+      }
+
+      .modal-header {
+        padding: 16px 20px;
+      }
+
+      .modal-body {
+        padding: 20px;
+      }
+
+      .modal-footer {
+        padding: 16px 20px;
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+<!-- Backdrop -->
+<div class="modal-backdrop"></div>
+
+<!-- Modal -->
+<div class="modal-container">
+  <div class="modal-header">
+    <h2 class="modal-title">{{ isEdit ? '✏️ Modifier Client' : '➕ Ajouter Client' }}</h2>
+    <button type="button" class="btn-close" aria-label="Close" (click)="cancel()">×</button>
+  </div>
+
+  <div class="modal-body">
+    <form [formGroup]="form" class="form-container">
+      <div>
+        <label class="form-label">Nom :</label>
+        <input formControlName="nom" type="text" class="form-control" />
+      </div>
+
+      <div>
+        <label class="form-label">Email :</label>
+        <input formControlName="email" type="email" class="form-control" />
+      </div>
+
+      <div>
+        <label class="form-label">Téléphone :</label>
+        <input formControlName="telephone" type="text" class="form-control" />
+      </div>
+
+      <div>
+        <label class="form-label">Date de naissance :</label>
+        <input formControlName="dateNaissance" type="date" class="form-control" />
+      </div>
+
+      <div>
+        <label class="form-label">Adresse :</label>
+        <input formControlName="adresse" type="text" class="form-control" />
+      </div>
+    </form>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="cancel()">Annuler</button>
+    <button type="button" class="btn btn-primary" (click)="save()" [disabled]="form.invalid">
+      {{ isEdit ? 'Mettre à jour' : 'Créer' }}
+    </button>
+  </div>
+</div>
+
+<script>
+  // Fonctions de démonstration
+  function cancel() {
+    console.log("Annuler");
+  }
+
+  function save() {
+    console.log("Enregistrer le client");
+    // Empêcher l'envoi du formulaire pour la démonstration
+    event.preventDefault();
+  }
+</script>
+</body>
+</html>

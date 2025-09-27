@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Financier</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #6c5ce7;
+      --primary-light: #a29bfe;
+      --secondary: #00b894;
+      --accent: #fd79a8;
+      --success: #00b894;
+      --warning: #fdcb6e;
+      --danger: #ff7675;
+      --light: #f8f9fa;
+      --dark: #2d3436;
+      --text: #2d3436;
+      --text-light: #636e72;
+      --card-bg: black;
+      --background: black;
+      --border: black;
+      --header-gradient: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--background);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 20px;
+    }
+
+    .dashboard-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* HEADER */
+    .dashboard-header {
+      background: var(--header-gradient);
+      color: dimgrey;
+      padding: 25px;
+      border-radius: 12px;
+      margin-bottom: 25px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+      text-align: center;
+    }
+
+    .dashboard-header h1 {
+      font-size: 28px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .dashboard-header p {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 16px;
+    }
+
+    /* SECTIONS */
+    .section {
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+      border: 1px solid var(--border);
+    }
+
+    .section h2 {
+      font-size: 22px;
+      margin-bottom: 25px;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .section h3 {
+      font-size: 18px;
+      margin: 25px 0 15px;
+      color: var(--primary-light);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* STATS GRID - DESIGN CIRCLES */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 25px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 25px;
+      text-align: center;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      border: 1px solid var(--border);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .circle-progress {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: conic-gradient(
+        var(--color) 0% calc(var(--percentage) * 1%),
+        #f0f3f7 calc(var(--percentage) * 1%) 100%
+      );
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .circle-progress::before {
+      content: '';
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      background: white;
+      border-radius: 50%;
+    }
+
+    .circle-content {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+    }
+
+    .stat-icon {
+      font-size: 24px;
+      margin-bottom: 8px;
+      color: var(--color);
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .stat-label {
+      font-size: 14px;
+      color: var(--text-light);
+      margin-top: 8px;
+      font-weight: 500;
+    }
+
+    /* Progress bars for additional stats */
+    .progress-container {
+      width: 100%;
+      height: 10px;
+      background-color: #f0f3f7;
+      border-radius: 5px;
+      overflow: hidden;
+      margin-top: 15px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      border-radius: 5px;
+      transition: width 0.5s ease;
+      background: var(--color);
+    }
+
+    /* STYLES POUR LES LISTES CRÉDITS ET NOTIFICATIONS */
+    .list-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .list-item {
+      background-color: var(--card-bg);
+      padding: 15px;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+      border-left: 4px solid var(--primary-light);
+    }
+
+    .list-item:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .list-item-content {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .list-item-title {
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 5px;
+    }
+
+    .list-item-subtitle {
+      font-size: 12px;
+      color: var(--text-light);
+    }
+
+    .list-item-badge {
+      background: var(--primary);
+      color: black;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      min-width: 40px;
+      text-align: center;
+    }
+
+    /* Style spécifique pour les crédits */
+    .credit-item[data-status="APPROUVE"] {
+      border-left-color: var(--success);
+    }
+
+    .credit-item[data-status="EN_COURS"] {
+      border-left-color: var(--warning);
+    }
+
+    .credit-item[data-status="REFUSE"] {
+      border-left-color: var(--danger);
+    }
+
+    .credit-item[data-status="EN_ATTENTE"] {
+      border-left-color: var(--primary-light);
+    }
+
+    /* Style spécifique pour les notifications */
+    .notification-item {
+      border-left-color: var(--accent);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .list-container {
+        grid-template-columns: 1fr;
+      }
+
+      .dashboard-header h1 {
+        font-size: 24px;
+      }
+
+      .circle-progress {
+        width: 100px;
+        height: 100px;
+      }
+
+      .circle-progress::before {
+        width: 80px;
+        height: 80px;
+      }
+
+      .stat-value {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="dashboard-container">
+  <!-- HEADER -->
+  <div class="dashboard-header">
+    <h1><i class="fas fa-chart-line"></i> Dashboard Financier</h1>
+    <p>Suivi global : Clients, Crédits, Scoring et Notifications</p>
+  </div>
+
+  <!-- CLIENTS -->
+  <div class="section">
+    <h2><i class="fas fa-users"></i> Clients</h2>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="circle-progress" style="--color: #74b9ff; --percentage: 100">
+          <div class="circle-content">
+            <i class="fas fa-user-friends stat-icon"></i>
+            <div class="stat-value">{{ clientStats?.totalClients || 0 }}</div>
+          </div>
+        </div>
+        <div class="stat-label">Total Clients</div>
+      </div>
+      <div class="stat-card">
+        <div class="circle-progress" style="--color: #55efc4; --percentage: {{ ((clientStats?.activeClients || 0) / (clientStats?.totalClients || 1)) * 100 }}">
+          <div class="circle-content">
+            <i class="fas fa-user-check stat-icon"></i>
+            <div class="stat-value">{{ clientStats?.activeClients || 0 }}</div>
+          </div>
+        </div>
+        <div class="stat-label">Actifs</div>
+        <div class="progress-container">
+          <div class="progress-bar" style="width: {{ ((clientStats?.activeClients || 0) / (clientStats?.totalClients || 1)) * 100 }}%; --color: #55efc4"></div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="circle-progress" style="--color: #ff7675; --percentage: {{ ((clientStats?.inactiveClients || 0) / (clientStats?.totalClients || 1)) * 100 }}">
+          <div class="circle-content">
+            <i class="fas fa-user-times stat-icon"></i>
+            <div class="stat-value">{{ clientStats?.inactiveClients || 0 }}</div>
+          </div>
+        </div>
+        <div class="stat-label">Inactifs</div>
+        <div class="progress-container">
+          <div class="progress-bar" style="width: {{ ((clientStats?.inactiveClients || 0) / (clientStats?.totalClients || 1)) * 100 }}%; --color: #ff7675"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CRÉDITS -->
+  <div class="section">
+    <h2><i class="fas fa-credit-card"></i> Crédits</h2>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="circle-progress" style="--color: #fdcb6e; --percentage: 100">
+          <div class="circle-content">
+            <i class="fas fa-sack-dollar stat-icon"></i>
+            <div class="stat-value">{{ creditTotals?.totalDemandes || 0 | number }}</div>
+          </div>
+        </div>
+        <div class="stat-label">Demandés</div>
+      </div>
+      <div class="stat-card">
+        <div class="circle-progress" style="--color: #55efc4; --percentage: {{ ((creditTotals?.totalRembourse || 0) / (creditTotals?.totalDemandes || 1)) * 100 }}">
+          <div class="circle-content">
+            <i class="fas fa-hand-holding-usd stat-icon"></i>
+            <div class="stat-value">{{ creditTotals?.totalRembourse || 0 | number:'1.2-2' }}</div>
+          </div>
+        </div>
+        <div class="stat-label">Remboursés</div>
+        <div class="progress-container">
+          <div class="progress-bar" style="width: {{ ((creditTotals?.totalRembourse || 0) / (creditTotals?.totalDemandes || 1)) * 100 }}%; --color: #55efc4"></div>
+        </div>
+      </div>
+    </div>
+
+    <h3><i class="fas fa-list-alt"></i> Crédits par Statut</h3>
+    <div class="list-container">
+      <div class="list-item credit-item" *ngFor="let status of creditByStatus" [attr.data-status]="status.statut">
+        <div class="list-item-content">
+          <div class="list-item-title">{{ status.statut }}</div>
+          <div class="list-item-subtitle">Crédits {{ status.statut.toLowerCase() }}</div>
+        </div>
+        <div class="list-item-badge">{{ status.count }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCORING -->
+  <div class="section">
+    <h2><i class="fas fa-chart-bar"></i> Scoring</h2>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="circle-progress" style="--color: #74b9ff; --percentage: 100">
+          <div class="circle-content">
+            <i class="fas fa-star stat-icon"></i>
+            <div class="stat-value">{{ totalScores?.totalScores || 0 }}</div>
+          </div>
+        </div>
+        <div class="stat-label">Total Scores</div>
+      </div>
+      <div class="stat-card">
+        <div class="circle-progress" style="--color: #55efc4; --percentage: {{ ((statusCount?.APPROUVE || 0) / (totalScores?.totalScores || 1)) * 100 }}">
+          <div class="circle-content">
+            <i class="fas fa-thumbs-up stat-icon"></i>
+            <div class="stat-value">{{ statusCount?.APPROUVE || 0 }}</div>
+          </div>
+        </div>
+        <div class="stat-label">Approuvés</div>
+      </div>
+      <div class="stat-card">
+        <div class="circle-progress" style="--color: #ff7675; --percentage: {{ ((statusCount?.REFUSE || 0) / (totalScores?.totalScores || 1)) * 100 }}">
+          <div class="circle-content">
+            <i class="fas fa-thumbs-down stat-icon"></i>
+            <div class="stat-value">{{ statusCount?.REFUSE || 0 }}</div>
+          </div>
+        </div>
+        <div class="stat-label">Rejetés</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTIFICATIONS -->
+  <div class="section">
+    <h2><i class="fas fa-bell"></i> Notifications</h2>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="circle-progress" style="--color: #fdcb6e; --percentage: 100">
+          <div class="circle-content">
+            <i class="fas fa-bell stat-icon"></i>
+            <div class="stat-value">{{ notificationTotals?.totalNotifications || 0 }}</div>
+          </div>
+        </div>
+        <div class="stat-label">Total</div>
+      </div>
+      <div class="stat-card">
+        <div class="circle-progress" style="--color: #55efc4; --percentage: {{ ((notificationTotals?.sentNotifications || 0) / (notificationTotals?.totalNotifications || 1)) * 100 }}">
+          <div class="circle-content">
+            <i class="fas fa-paper-plane stat-icon"></i>
+            <div class="stat-value">{{ notificationTotals?.sentNotifications || 0 }}</div>
+          </div>
+        </div>
+        <div class="stat-label">Envoyées</div>
+      </div>
+      <div class="stat-card">
+        <div class="circle-progress" style="--color: #ff7675; --percentage: {{ ((notificationTotals?.unsentNotifications || 0) / (notificationTotals?.totalNotifications || 1)) * 100 }}">
+          <div class="circle-content">
+            <i class="fas fa-clock stat-icon"></i>
+            <div class="stat-value">{{ notificationTotals?.unsentNotifications || 0 }}</div>
+          </div>
+        </div>
+        <div class="stat-label">Non Envoyées</div>
+      </div>
+    </div>
+
+    <h3><i class="fas fa-user-circle"></i> Notifications par Client</h3>
+    <div class="list-container">
+      <div class="list-item notification-item" *ngFor="let notif of notificationsByClient">
+        <div class="list-item-content">
+          <div class="list-item-title">Client ID {{ notif.clientId }}</div>
+          <div class="list-item-subtitle">Notifications reçues</div>
+        </div>
+        <div class="list-item-badge">{{ notif.count }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modal de Notification</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #f5f7fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1040;
+    }
+
+    .modal-container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      width: 100%;
+      max-width: 500px;
+      overflow: hidden;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1050;
+      animation: modalFadeIn 0.3s ease-out;
+    }
+
+    .modal-header {
+      background: #4a6cf7;
+      color: white;
+      padding: 20px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .btn-close {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-close:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .modal-body {
+      padding: 24px;
+    }
+
+    .form-label {
+      font-weight: 500;
+      color: #2c3e50;
+      margin-bottom: 8px;
+      display: block;
+      font-size: 0.95rem;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: all 0.2s ease;
+      background-color: #f8fafc;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: #4a6cf7;
+      background-color: white;
+      box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.2);
+    }
+
+    textarea.form-control {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .mb-3 {
+      margin-bottom: 20px;
+    }
+
+    .modal-footer {
+      padding: 20px 24px;
+      background-color: #f8f9fa;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      border-top: 1px solid #e9ecef;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 0.95rem;
+    }
+
+    .btn-primary {
+      background: #4a6cf7;
+      color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: #3a5cd8;
+    }
+
+    .btn-primary:disabled {
+      background: #a0a0f0;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: white;
+      color: #64748b;
+      border: 1px solid #e2e8f0;
+    }
+
+    .btn-secondary:hover {
+      background: #f1f5f9;
+    }
+
+    @keyframes modalFadeIn {
+      from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+    }
+
+    /* Responsive design */
+    @media (max-width: 576px) {
+      .modal-container {
+        width: calc(100% - 40px);
+        margin: 0 20px;
+      }
+
+      .modal-header {
+        padding: 16px 20px;
+      }
+
+      .modal-body {
+        padding: 20px;
+      }
+
+      .modal-footer {
+        padding: 16px 20px;
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+<!-- Backdrop -->
+<div class="modal-backdrop"></div>
+
+<!-- Modal -->
+<div class="modal-container">
+  <div class="modal-header">
+    <h5 class="modal-title">{{ notification ? 'Modifier' : 'Nouvelle Notification' }}</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="close()">×</button>
+  </div>
+
+  <div class="modal-body">
+    <form [formGroup]="notificationForm">
+      <div class="mb-3">
+        <label for="clientId" class="form-label">Client ID</label>
+        <input type="number" id="clientId" class="form-control" formControlName="clientId" />
+      </div>
+
+      <div class="mb-3">
+        <label for="message" class="form-label">Message</label>
+        <textarea id="message" class="form-control" formControlName="message" rows="3"></textarea>
+      </div>
+    </form>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="close()">Annuler</button>
+    <button type="button" class="btn btn-primary" (click)="save()" [disabled]="notificationForm.invalid">
+      {{ notification ? 'Mettre à jour' : 'Envoyer' }}
+    </button>
+  </div>
+</div>
+
+<script>
+  // Fonctions de démonstration
+  function close() {
+    console.log("Fermer le modal");
+  }
+
+  function save() {
+    console.log("Enregistrer la notification");
+    // Empêcher l'envoi du formulaire pour la démonstration
+    event.preventDefault();
+  }
+</script>
+</body>
+</html>

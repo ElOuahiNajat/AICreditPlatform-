@@ -1,0 +1,15 @@
+<div *ngIf="totals">
+  <h3>Totals</h3>
+  <p>Total Notifications: {{ totals?.totalNotifications }}</p>
+  <p>Sent Notifications: {{ totals?.sentNotifications }}</p>
+  <p>Unsent Notifications: {{ totals?.unsentNotifications }}</p>
+</div>
+
+<div *ngIf="byClient.length > 0">
+  <h3>Notifications by Client</h3>
+  <ul>
+    <li *ngFor="let item of byClient">
+      Client ID: {{ item.clientId }} — Count: {{ item.count }}
+    </li>
+  </ul>
+</div>

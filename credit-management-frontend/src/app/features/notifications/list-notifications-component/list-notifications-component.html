@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestion des Notifications</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    body {
+      background-color: #f5f7fa;
+      color: #333;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #e1e4e8;
+    }
+
+    h2 {
+      font-size: 28px;
+      font-weight: 700;
+      color: #2c3e50;
+    }
+
+    .btn-primary {
+      background-color: #4e73df;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 6px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .btn-primary:hover {
+      background-color: #3a56c4;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+
+    .notification-table {
+      width: 100%;
+      background-color: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background-color: #4e73df;
+      color: white;
+    }
+
+    th {
+      padding: 16px 20px;
+      text-align: left;
+      font-weight: 500;
+      font-size: 16px;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid #eaeef2;
+      transition: background-color 0.2s;
+    }
+
+    tbody tr:hover {
+      background-color: #f8f9fc;
+    }
+
+    td {
+      padding: 16px 20px;
+      color: #4a4a4a;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-action {
+      padding: 8px 12px;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .btn-edit {
+      background-color: #f8f9fc;
+      color: #4e73df;
+      border: 1px solid #e1e4e8;
+    }
+
+    .btn-edit:hover {
+      background-color: #e8eeff;
+      border-color: #4e73df;
+    }
+
+    .btn-sent {
+      background-color: #1cc88a;
+      color: white;
+    }
+
+    .btn-sent:hover:not(:disabled) {
+      background-color: #17a673;
+    }
+
+    .btn-sent:disabled {
+      background-color: #b4e6d4;
+      cursor: not-allowed;
+    }
+
+    .btn-delete {
+      background-color: #f8f9fc;
+      color: #e74a3b;
+      border: 1px solid #e1e4e8;
+    }
+
+    .btn-delete:hover {
+      background-color: #ffe9e7;
+      border-color: #e74a3b;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 5px 12px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .status-sent {
+      background-color: #e6f4ee;
+      color: #1a9367;
+    }
+
+    .status-pending {
+      background-color: #fdf0e6;
+      color: #e67a00;
+    }
+
+    @media (max-width: 768px) {
+      .actions {
+        flex-direction: column;
+      }
+
+      th, td {
+        padding: 12px 10px;
+      }
+
+      .btn-action {
+        font-size: 12px;
+        padding: 6px 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h2><i class="fas fa-bell"></i> Notifications</h2>
+    <button class="btn-primary" (click)="openAddModal()">
+      <i class="fas fa-plus"></i> Nouvelle Notification
+    </button>
+  </header>
+
+  <div class="notification-table">
+    <table>
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Client ID</th>
+        <th>Message</th>
+        <th>Statut</th>
+        <th>Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let notif of notifications">
+        <td>{{ notif.id }}</td>
+        <td>{{ notif.clientId }}</td>
+        <td>{{ notif.message }}</td>
+        <td>
+                            <span *ngIf="notif.sent" class="status-badge status-sent">
+                                <i class="fas fa-check-circle"></i> Envoyé
+                            </span>
+          <span *ngIf="!notif.sent" class="status-badge status-pending">
+                                <i class="fas fa-clock"></i> En attente
+                            </span>
+        </td>
+        <td>
+          <div class="actions">
+            <button class="btn-action btn-edit" (click)="openAddModal(notif)">
+              <i class="fas fa-edit"></i> Éditer
+            </button>
+            <button class="btn-action btn-sent" (click)="markAsSent(notif)" [disabled]="notif.sent">
+              <i class="fas fa-paper-plane"></i> Marquer envoyé
+            </button>
+            <button class="btn-action btn-delete" (click)="deleteNotification(notif)">
+              <i class="fas fa-trash-alt"></i> Supprimer
+            </button>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</body>
+</html>

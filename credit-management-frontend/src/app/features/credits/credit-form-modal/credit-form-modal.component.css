@@ -1,0 +1,10 @@
+/* Centrer le modal sur la page et ajuster la largeur */
+:host ::ng-deep .modal-dialog {
+  max-width: 500px; /* largeur personnalisée */
+  margin: 1.75rem auto; /* centré verticalement */
+}
+
+:host ::ng-deep .modal-content {
+  border-radius: 0.5rem;
+  padding: 1rem;
+}

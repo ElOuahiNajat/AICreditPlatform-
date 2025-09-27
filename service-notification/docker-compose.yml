@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+  postgres-notification:
+    image: postgres:15
+    container_name: banque-notification-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: banque_notification
+    ports:
+      - "${POSTGRES_NOTIFICATION_PORT}:5432"  # par ex. 5436:5432 pour éviter conflit avec les autres DB
+    volumes:
+      - postgres-notification-data:/var/lib/postgresql/data
+    networks:
+      - banque-network
+
+volumes:
+  postgres-notification-data:
+
+networks:
+  banque-network:
+    driver: bridge

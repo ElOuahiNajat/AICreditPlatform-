@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+  postgres-scoring:
+    image: postgres:15
+    container_name: banque-scoring-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: banque_scoring  # ← PostgreSQL va créer cette base au démarrage
+    ports:
+      - "5454:5432"  # Par exemple 5435:5432 pour éviter conflit
+    volumes:
+      - postgres-scoring-data:/var/lib/postgresql/data
+    networks:
+      - banque-network
+
+volumes:
+  postgres-scoring-data:
+
+networks:
+  banque-network:
+    driver: bridge

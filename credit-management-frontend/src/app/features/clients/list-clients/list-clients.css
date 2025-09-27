@@ -1,0 +1,17 @@
+.table-container {
+  margin: 20px;
+  padding: 20px;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-radius: 8px;
+}
+
+th {
+  font-weight: bold;
+}

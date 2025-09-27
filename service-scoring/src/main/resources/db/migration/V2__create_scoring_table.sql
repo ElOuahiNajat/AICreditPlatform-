@@ -1,0 +1,1 @@
+ALTER TABLE scoring ADD COLUMN client_id BIGINT NOT NULL;

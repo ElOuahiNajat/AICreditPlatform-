@@ -1,0 +1,21 @@
+<div class="dashboard">
+  <h2>Dashboard Scoring</h2>
+
+  <div *ngIf="totalScores">
+    <p><b>Total Scorings:</b> {{ totalScores.totalScores }}</p>
+  </div>
+
+  <div *ngIf="statusCount">
+    <p><b>APPROUVE:</b> {{ statusCount.APPROUVE }}</p>
+    <p><b>REFUSE:</b> {{ statusCount.REFUSE }}</p>
+  </div>
+
+  <div *ngIf="averageScore">
+    <p><b>Score Moyen:</b> {{ averageScore.averageScore | number:'1.1-2' }}</p>
+  </div>
+
+  <div *ngIf="minMaxScore">
+    <p><b>Score Minimum:</b> {{ minMaxScore.minScore }}</p>
+    <p><b>Score Maximum:</b> {{ minMaxScore.maxScore }}</p>
+  </div>
+</div>

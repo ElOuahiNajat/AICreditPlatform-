@@ -1,0 +1,9 @@
+<div *ngIf="stats" class="card p-3">
+  <h3>Statistiques Clients</h3>
+  <p><b>Total Clients:</b> {{ stats.totalClients }}</p>
+  <p><b>Clients Actifs:</b> {{ stats.activeClients }}</p>
+  <p><b>Clients Inactifs:</b> {{ stats.inactiveClients }}</p>
+</div>
+<div *ngIf="!stats">
+  <p>Chargement des données...</p>
+</div>
